@@ -3,6 +3,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 import asyncio 
+import httpx
 
 SERVICE_URL = "https://n3xus-x4ep.onrender.com"
 
