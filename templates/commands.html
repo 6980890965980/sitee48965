@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Commands</title>
+  <style>
+    :root {
+      --bg: #0d0d0d;
+      --card: #1a1a1a;
+      --fg: #eee;
+      --fg-muted: #aaa;
+      --accent: #5865f2;
+      --hover: #2a2a2a;
+      --radius: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+    body { background: var(--bg); color: var(--fg); min-height: 100vh; }
+    a { color: inherit; text-decoration: none; }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 16px 32px;
+    }
+    .logo {
+      height: 64px;
+    }
+    nav {
+      display: flex;
+      gap: 16px;
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 8px 16px;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    nav a {
+      padding: 8px 12px;
+      border-radius: var(--radius);
+      transition: background .2s, color .2s;
+      color: var(--fg-muted);
+      cursor: pointer;
+    }
+    nav a:hover,
+    nav a.active-tab {
+      background: var(--accent);
+      color: #fff;
+    }
+    main { padding: 0 32px 32px; }
+
+    /* Commands */
+    .search-bar {
+      margin: 24px 0;
+      display: flex;
+      justify-content: center;
+    }
+    .search-bar input {
+      width: 100%;
+      max-width: 400px;
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      border: none;
+      background: var(--card);
+      color: var(--fg);
+    }
+    .categories {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .categories button {
+      background: var(--card);
+      border: none;
+      padding: 8px 16px;
+      border-radius: var(--radius);
+      color: var(--fg-muted);
+      cursor: pointer;
+      transition: background .2s, color .2s;
+    }
+    .categories button.active,
+    .categories button:hover {
+      background: var(--accent);
+      color: #fff;
+    }
+    .categories button span {
+      background: #333;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-left: 6px;
+      font-size: 0.85em;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px,1fr));
+      gap: 16px;
+    }
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .card h3 {
+      font-size: 1.25em;
+      margin-bottom: 8px;
+    }
+    .card .description {
+      font-size: 0.95em;
+      color: var(--fg-muted);
+      margin-bottom: 12px;
+      flex-grow: 1;
+    }
+    .card .meta {
+      font-size: 0.85em;
+      color: var(--fg-muted);
+      margin-bottom: 12px;
+    }
+    .card .meta div { margin-bottom: 4px; }
+    .copy-btn {
+      align-self: flex-end;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: var(--fg-muted);
+      font-size: 0.9em;
+      transition: color .2s;
+    }
+    .copy-btn:hover { color: var(--fg); }
+
+    /* Docs & FAQ */
+    #commands { display: block; }
+    section.docs, section.faq {
+      display: none;
+      padding: 24px 0;
+      line-height: 1.6em;
+    }
+    section.docs h2, section.faq h2 {
+      margin-bottom: 12px;
+      color: var(--accent);
+    }
+    section.docs ol {
+      margin-left: 20px;
+      margin-bottom: 16px;
+    }
+    section.faq dt {
+      font-weight: bold;
+      margin-top: 12px;
+    }
+    section.faq dd {
+      margin-left: 16px;
+      margin-bottom: 8px;
+      color: var(--fg-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <img class="logo" src="logo.png" alt="Logo">
+    <nav>
+      <a href="#" class="active-tab" data-target="commands">Commands</a>
+      <a href="#" data-target="docs">How It Works</a>
+      <a href="#" data-target="faq">FAQ</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Commands Section -->
+    <section id="commands">
+      <div class="search-bar">
+        <input type="text" placeholder="Search commands…">
+      </div>
+      <div class="categories">
+        <button class="active">Admin <span>7</span></button>
+        <button>NSFW <span>13</span></button>
+        <button>Misc <span>7</span></button>
+      </div>
+      <div class="grid">
+        <!-- Admin -->
+        <div class="card">
+          <h3>/ban</h3>
+          <p class="description">Ban a user and send an embed with an image.</p>
+          <div class="meta">
+            <div><strong>Arguments:</strong> user, [reason]</div>
+            <div><strong>Permissions:</strong> Administrator</div>
+          </div>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <div class="card">
+          <h3>/purge</h3>
+          <p class="description">🧹 Bulk delete messages from a channel.</p>
+          <div class="meta">
+            <div><strong>Arguments:</strong> amount</div>
+            <div><strong>Permissions:</strong> Administrator</div>
+          </div>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <div class="card">
+          <h3>/setupjail</h3>
+          <p class="description">Create jail category, channel, and role.</p>
+          <div class="meta">
+            <div><strong>Arguments:</strong> none</div>
+            <div><strong>Permissions:</strong> Administrator</div>
+          </div>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <div class="card">
+          <h3>/jail</h3>
+          <p class="description">Jail or unjail a member.</p>
+          <div class="meta">
+            <div><strong>Arguments:</strong> user</div>
+            <div><strong>Permissions:</strong> Administrator</div>
+          </div>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <div class="card">
+          <h3>/addc</h3>
+          <p class="description">Add credits to a user (admin only).</p>
+          <div class="meta">
+            <div><strong>Arguments:</strong> user, amount</div>
+            <div><strong>Permissions:</strong> Administrator</div>
+          </div>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <div class="card">
+          <h3>/removec</h3>
+          <p class="description">Remove credits from a user (admin only).</p>
+          <div class="meta">
+            <div><strong>Arguments:</strong> user, amount</div>
+            <div><strong>Permissions:</strong> Administrator</div>
+          </div>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <div class="card">
+          <h3>/gac</h3>
+          <p class="description">Grant credits to every user in the server (admin only).</p>
+          <div class="meta">
+            <div><strong>Arguments:</strong> amount</div>
+            <div><strong>Permissions:</strong> Administrator</div>
+          </div>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <!-- NSFW -->
+        <div class="card">
+          <h3>/search</h3>
+          <p class="description">Search across sources.</p>
+          <div class="meta"><div><strong>Arguments:</strong> query</div></div>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <div class="card">
+          <h3>/jav_search</h3>
+          <p class="description">Search adult video sites.</p>
+          <div class="meta"><div><strong>Arguments:</strong> query</div></div>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <div class="card">
+          <h3>/sites</h3>
+          <p class="description">List supported sites.</p>
+          <div class="meta"><div><strong>Arguments:</strong> none</div></div>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <div class="card">
+          <h3>/suggest_modal</h3>
+          <p class="description">Post the site‑suggestion prompt + button.</p>
+          <div class="meta"><div><strong>Arguments:</strong> none</div></div>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <div class="card">
+          <h3>/whisper</h3>
+          <p class="description">Start a private whisper chat with a 5‑minute countdown and optional extension.</p>
+          <div class="meta"><div><strong>Arguments:</strong> none</div></div>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <div class="card">
+          <h3>/channels</h3>
+          <p class="description">Browse Premium channels.</p>
+          <div class="meta"><div><strong>Arguments:</strong> none</div></div>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <div class="card">
+          <h3>/channels_search</h3>
+          <p class="description">Fetch and browse videos for a given fxPornHD channel slug.</p>
+          <div class="meta"><div><strong>Arguments:</strong> slug</div></div>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <div class="card">
+          <h3>/pornstars</h3>
+          <p class="description">Browse FullPorner’s pornstar directory.</p>
+          <div class="meta"><div><strong>Arguments:</strong> none</div></div>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <div class="card">
+          <h3>/search_model</h3>
+          <p class="description">Get info for a Jav model.</p>
+          <div class="meta"><div><strong>Arguments:</strong> model name</div></div>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <div class="card">
+          <h3>/winkav</h3>
+          <p class="description">Search for videos of an actor on winkav.</p>
+          <div class="meta"><div><strong>Arguments:</strong> actor name</div></div>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <div class="card">
+          <h3>/search_jmr_model</h3>
+          <p class="description">Search for recent posts of a Jav model.</p>
+          <div class="meta"><div><strong>Arguments:</strong> model name</div></div>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <div class="card">
+          <h3>/cover</h3>
+          <p class="description">Get the cover of a video ID.</p>
+          <div class="meta"><div><strong>Arguments:</strong> video ID</div></div>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <div class="card">
+          <h3>/id</h3>
+          <p class="description">Get info on a Jav ID.</p>
+          <div class="meta"><div><strong>Arguments:</strong> Jav ID</div></div>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <!-- Misc -->
+        <div class="card">
+          <h3>/help</h3>
+          <p class="description">Display help information.</p>
+          <div class="meta"><div><strong>Arguments:</strong> none</div></div>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <div class="card">
+          <h3>/credits</h3>
+          <p class="description">Check your credit balance and daily cooldown.</p>
+          <div class="meta"><div><strong>Arguments:</strong> none</div></div>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <div class="card">
+          <h3>/daily</h3>
+          <p class="description">Claim your daily credits (5 per day).</p>
+          <div class="meta"><div><strong>Arguments:</strong> none</div></div>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <div class="card">
+          <h3>/serverinfo</h3>
+          <p class="description">Get detailed information about the server.</p>
+          <div class="meta"><div><strong>Arguments:</strong> none</div></div>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <div class="card">
+          <h3>/userinfo</h3>
+          <p class="description">Get detailed information about a user.</p>
+          <div class="meta"><div><strong>Arguments:</strong> user</div></div>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <div class="card">
+          <h3>/botinfo</h3>
+          <p class="description">Get information about the bot.</p>
+          <div class="meta"><div><strong>Arguments:</strong> none</div></div>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <div class="card">
+          <h3>/leaderboard</h3>
+          <p class="description">Displays the top 10 users by credit balance.</p>
+          <div class="meta"><div><strong>Arguments:</strong> none</div></div>
+          <button class="copy-btn">Copy</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="docs" class="docs">
+      <h2>How It Works</h2>
+      <p>This Discord bot is built with <code>discord.py</code> and organizes its functionality into three primary areas:</p>
+      <ol>
+        <li><strong>Administration:</strong> Commands like <code>/ban</code>, <code>/purge</code>, and credit management (<code>/addc</code>, <code>/removec</code>, <code>/gac</code>) require Administrator permission.</li>
+        <li><strong>NSFW Content:</strong> Search adult video sources (<code>/search</code>, <code>/jav_search</code>), browse sites (<code>/sites</code>), and fetch videos/models.</li>
+        <li><strong>Utility & Credits:</strong> Claim daily credits (<code>/daily</code>), check your balance (<code>/credits</code>), and see top users (<code>/leaderboard</code>).</li>
+      </ol>
+      <p>Use <code>/help</code> any time for detailed usage. Jail commands (<code>/setupjail</code> + <code>/jail</code>) let you moderate members by moving them in and out of a “jail” role.</p>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="faq">
+      <h2>FAQ</h2>
+      <dl>
+        <dt>How do I get help?</dt>
+        <dd>Type <code>/help</code> in any channel; the bot will DM you the full command list.</dd>
+        <dt>Who can use Admin commands?</dt>
+        <dd>Only users with the Administrator permission.</dd>
+        <dt>What are credits?</dt>
+        <dd>Credits are server currency. Claim 5/day with <code>/daily</code> and spend or earn them via bot features.</dd>
+        <dt>How can I suggest a new site?</dt>
+        <dd>Use <code>/suggest_modal</code> to open the suggestion dialog.</dd>
+        <dt>Where can I get support?</dt>
+        <dd>Join our official Discord support server.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <script>
+    // Nav‑tab switching
+    const navLinks = document.querySelectorAll('nav a');
+    const sections = document.querySelectorAll('main section');
+    navLinks.forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        // update active tab
+        navLinks.forEach(l => l.classList.remove('active-tab'));
+        link.classList.add('active-tab');
+        // show selected, hide others
+        const tgt = link.dataset.target;
+        sections.forEach(sec => {
+          sec.style.display = sec.id === tgt ? 'block' : 'none';
+        });
+      });
+    });
+
+    // Category‑tab switching inside Commands
+    const catButtons = document.querySelectorAll('.categories button');
+    const cards = document.querySelectorAll('.grid .card');
+    const categories = { 'Admin': 0, 'NSFW': 7, 'Misc': 20 };
+    catButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        catButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const key = btn.textContent.trim().split(' ')[0];
+        const start = categories[key];
+        const count = +btn.querySelector('span').textContent;
+        cards.forEach((c, i) => {
+          c.style.display = (i >= start && i < start + count) ? 'flex' : 'none';
+        });
+      });
+    });
+    // init: show only Admin on load
+    cards.forEach((c, i) => { if (i >= 7) c.style.display = 'none'; });
+
+    // Copy‑to‑clipboard
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const cmd = btn.closest('.card').querySelector('h3').innerText.trim();
+        navigator.clipboard.writeText(cmd).then(() => {
+          const original = btn.innerText;
+          btn.innerText = 'Copied!';
+          setTimeout(() => btn.innerText = original, 1500);
+        });
+      });
+    });
+  </script>
+
+</body>
+</html>
