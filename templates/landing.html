@@ -6,31 +6,34 @@
   <style>
     /* === Variables === */
     :root {
-      --bg: #0d0d0d;
+      --base: #0f1216;           /* darker grey-blue */
       --fg: #fff;
-      --fg-muted: #ccc;
+      --fg-muted: #bbb;
       --accent: #e94560;
-      --card-bg: rgba(26,26,26,0.6);
+      --card-bg: rgba(26, 36, 47, 0.6);
       --radius: 8px;
       --blur: 10px;
     }
-    * { box-sizing: border-box; margin:0; padding:0; }
-    body, html {
-      width:100%; height:100%;
-      background: var(--bg);
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%; height: 100%;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(60,140,200,0.3), transparent 60%),
+        radial-gradient(circle at 80% 70%, rgba(60,140,200,0.2), transparent 60%),
+        var(--base);
       color: var(--fg);
       font-family: "Segoe UI", sans-serif;
       overflow: hidden;
+      position: relative;
     }
     a { text-decoration: none; color: inherit; }
 
-    /* === Background Canvas === */
+    /* === Starfield Canvas === */
     #bg {
       position: fixed;
       top: 0; left: 0;
       width: 100vw; height: 100vh;
-      z-index: -1;
-      background: var(--bg);
+      z-index: 0;
     }
 
     /* === Header / Nav === */
@@ -40,13 +43,13 @@
       width: calc(100% - 64px);
       display: flex;
       align-items: center;
+      z-index: 1;
     }
-  .logo {
-    height: 128px;     /* adjust as needed */
-    max-width: 200px;  /* optional, keeps aspect ratio */
-    width: auto;
-  }
-
+    .logo {
+      height: 128px;
+      max-width: 200px;
+      width: auto;
+    }
     nav {
       margin: 0 auto;
       background: var(--card-bg);
@@ -68,18 +71,23 @@
       color: #fff;
     }
 
-    /* === Hero Section === */
-    .hero {
-      display: grid;
+    /* === Hero & FAQ Sections === */
+    .hero, .faq {
+      display: none;
       grid-template-columns: 1fr 1fr;
       align-items: center;
       height: 100vh;
       padding: 0 8vw;
+      position: relative;
+      z-index: 1;
     }
-    .hero-content {
-      max-width: 500px;
+    .hero.active, .faq.active {
+      display: grid;
     }
-    .hero-content h1 {
+    .hero-content, .faq-content {
+      max-width: 600px;
+    }
+    .hero-content h1, .faq-content h1 {
       font-size: 3rem;
       line-height: 1.1;
       margin-bottom: 16px;
@@ -87,7 +95,7 @@
     .hero-content h1 span {
       color: var(--accent);
     }
-    .hero-content p {
+    .hero-content p, .faq-content p {
       color: var(--fg-muted);
       font-size: 1.1rem;
       margin-bottom: 32px;
@@ -106,7 +114,7 @@
       background: #d83b54;
     }
 
-    /* === Feature Boxes (one at a time) === */
+    /* === Feature Boxes === */
     .features {
       position: relative;
       width: 100%;
@@ -148,21 +156,20 @@
 </head>
 <body>
 
-  <!-- Animated Starfield Background -->
+  <!-- Canvas for Stars -->
   <canvas id="bg"></canvas>
 
-  <!-- Header with Logo + Centered Nav -->
+  <!-- Header + Nav -->
   <header>
     <img src="/static/ne.png" alt="N3XUS Logo" class="logo">
     <nav>
-      <a href="/commands" class="active">Commands</a>
-      <a href="/faq">FAQ</a>
+      <a href="#" id="cmdLink" class="active">Commands</a>
+      <a href="#" id="faqLink">FAQ</a>
     </nav>
   </header>
 
-  <!-- Hero / Showcase -->
-  <div class="hero">
-    <!-- Left Text -->
+  <!-- Commands / Hero -->
+  <div class="hero active" id="commandsSection">
     <div class="hero-content">
       <h1><span>N3XUS</span> is Discord’s #1 NSFW bot</h1>
       <p>
@@ -170,12 +177,10 @@
         Search millions of images, GIFs, and videos—all at your fingertips,  
         fully moderated and easy to use.
       </p>
-      <!-- PURCHASE BUTTON only -->
       <a href="https://discord.gg/y6EdJBAvF9" target="_blank" class="btn">
         Purchase →
       </a>
     </div>
-    <!-- Right Animated Feature Callouts -->
     <div class="features">
       <div class="feature"><span class="icon">🔍</span><span>Image Search</span></div>
       <div class="feature"><span class="icon">📂</span><span>Premium Galleries</span></div>
@@ -183,61 +188,110 @@
     </div>
   </div>
 
-  <!-- STARFIELD SCRIPT -->
+  <!-- FAQ Section -->
+  <div class="faq" id="faqSection">
+    <div class="faq-content">
+      <h1>Frequently Asked Questions</h1>
+      <p><strong>Q: How do I add N3XUS to my server?</strong><br>
+      A: Click the “Invite” link on our Discord page, authorize the bot, and configure its role.</p>
+      <p><strong>Q: Is there a premium version?</strong><br>
+      A: Yes! Premium unlocks private galleries, faster image search, and more.</p>
+      <p><strong>Q: Where can I get support?</strong><br>
+      A: Join our support server at <a href="https://discord.gg/y6EdJBAvF9">discord.gg/y6EdJBAvF9</a>.</p>
+    </div>
+  </div>
+
+  <!-- STARFIELD & UI LOGIC SCRIPT -->
   <script>
-    // — Starfield Background
+    // — Canvas setup
     const canvas = document.getElementById('bg');
-    const ctx = canvas.getContext('2d');
-    let w = canvas.width = innerWidth;
+    const ctx    = canvas.getContext('2d');
+    let w = canvas.width  = innerWidth;
     let h = canvas.height = innerHeight;
-    const stars = [], STAR_COUNT = 120;
-    function initStars() {
-      stars.length = 0;
-      for (let i = 0; i < STAR_COUNT; i++) {
-        stars.push({ x: Math.random()*w, y: Math.random()*h, z: Math.random()*w, o: Math.random() });
+
+    class Star {
+      constructor() { this.reset(); }
+      reset() {
+        this.x = Math.random() * w;
+        this.y = Math.random() * h;
+        this.baseR = Math.random() * 1.5 + 0.5;
+        this.r = this.baseR;
+        this.vx = (Math.random() - 0.5) * 0.05;
+        this.vy = (Math.random() - 0.5) * 0.05;
+        this.phase = Math.random() * 2 * Math.PI;
+        this.blink = Math.random() * 0.02 + 0.01;
       }
-    }
-    function drawStars() {
-      ctx.fillStyle = '#000';
-      ctx.fillRect(0, 0, w, h);
-      for (let s of stars) {
-        s.z -= 2;
-        if (s.z <= 0) { s.x = Math.random()*w; s.y = Math.random()*h; s.z = w; s.o = Math.random(); }
-        const k = 128/s.z;
-        const px = (s.x - w/2)*k + w/2;
-        const py = (s.y - h/2)*k + h/2;
-        const size = (1 - s.z/w)*3;
+      update() {
+        this.x += this.vx; this.y += this.vy;
+        if (this.x < 0 || this.x > w || this.y < 0 || this.y > h) this.reset();
+        this.phase += this.blink;
+        this.alpha = 0.5 + 0.5 * Math.sin(this.phase);
+        this.r     = this.baseR * (0.75 + 0.25 * (1 + Math.sin(this.phase)) / 2);
+      }
+      draw() {
         ctx.beginPath();
-        ctx.fillStyle = `rgba(255,255,255,${s.o})`;
-        ctx.arc(px, py, size, 0, Math.PI*2);
+        ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI);
+        ctx.fillStyle = `rgba(255,255,255,${this.alpha})`;
         ctx.fill();
       }
-      requestAnimationFrame(drawStars);
     }
-    window.addEventListener('resize', ()=>{
-      w = canvas.width = innerWidth;
+
+    const stars = [];
+    const COUNT = 150;
+    function initStars() {
+      stars.length = 0;
+      for (let i = 0; i < COUNT; i++) stars.push(new Star());
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, w, h);
+      stars.forEach(s => { s.update(); s.draw(); });
+      requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('resize', () => {
+      w = canvas.width  = innerWidth;
       h = canvas.height = innerHeight;
       initStars();
     });
-    initStars();
-    drawStars();
 
-    // — Feature Messages Cycle
+    initStars();
+    animate();
+
+    // — Feature message cycle
     const features = document.querySelectorAll('.feature');
     let idx = 0;
-    function showNextFeature() {
-      const current = features[idx];
-      current.classList.add('visible');
-      setTimeout(() => current.classList.add('exiting'), 2000);
+    function cycle() {
+      const cur = features[idx];
+      cur.classList.add('visible');
+      setTimeout(() => cur.classList.add('exiting'), 2000);
       setTimeout(() => {
-        current.classList.remove('visible', 'exiting');
+        cur.classList.remove('visible','exiting');
         idx = (idx + 1) % features.length;
-        showNextFeature();
+        cycle();
       }, 3000);
     }
-    window.addEventListener('load', () => {
-      features.forEach(f => f.classList.remove('visible','exiting'));
-      showNextFeature();
+    window.addEventListener('load', cycle);
+
+    // — Tab switching
+    const cmdLink = document.getElementById('cmdLink');
+    const faqLink = document.getElementById('faqLink');
+    const cmdSec  = document.getElementById('commandsSection');
+    const faqSec  = document.getElementById('faqSection');
+
+    cmdLink.addEventListener('click', e => {
+      e.preventDefault();
+      cmdLink.classList.add('active');
+      faqLink.classList.remove('active');
+      cmdSec.classList.add('active');
+      faqSec.classList.remove('active');
+    });
+    faqLink.addEventListener('click', e => {
+      e.preventDefault();
+      faqLink.classList.add('active');
+      cmdLink.classList.remove('active');
+      faqSec.classList.add('active');
+      cmdSec.classList.remove('active');
     });
   </script>
 
