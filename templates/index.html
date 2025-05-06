@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>N3XUS — Discord’s #1 NSFW Bot</title>
+  <style>
+    /* === Variables === */
+    :root {
+      --bg: #0d0d0d;
+      --fg: #fff;
+      --fg-muted: #ccc;
+      --accent: #e94560;
+      --card-bg: rgba(26,26,26,0.6);
+      --radius: 8px;
+      --blur: 10px;
+    }
+    * { box-sizing: border-box; margin:0; padding:0; }
+    body, html {
+      width:100%; height:100%;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: "Segoe UI", sans-serif;
+      overflow: hidden;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    /* === Background Canvas === */
+    #bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      z-index: -1;
+      background: var(--bg);
+    }
+
+    /* === Header / Nav === */
+    header {
+      position: absolute;
+      top: 16px; left: 32px;
+      width: calc(100% - 64px);
+      display: flex;
+      align-items: center;
+    }
+    .logo {
+      height: 64px;
+    }
+    nav {
+      margin: 0 auto;
+      background: var(--card-bg);
+      padding: 8px 16px;
+      border-radius: var(--radius);
+      backdrop-filter: blur(var(--blur));
+      display: flex;
+      gap: 16px;
+    }
+    nav a {
+      padding: 8px 12px;
+      border-radius: var(--radius);
+      color: var(--fg-muted);
+      transition: background .2s, color .2s;
+      cursor: pointer;
+    }
+    nav a:hover, nav a.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    /* === Hero Section === */
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      height: 100vh;
+      padding: 0 8vw;
+    }
+    .hero-content {
+      max-width: 500px;
+    }
+    .hero-content h1 {
+      font-size: 3rem;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+    .hero-content h1 span {
+      color: var(--accent);
+    }
+    .hero-content p {
+      color: var(--fg-muted);
+      font-size: 1.1rem;
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+    .btn {
+      display: inline-block;
+      padding: 12px 24px;
+      border-radius: var(--radius);
+      background: var(--accent);
+      color: #fff;
+      font-weight: bold;
+      transition: background .2s;
+    }
+    .btn:hover {
+      background: #d83b54;
+    }
+
+    /* === Feature Boxes (one at a time) === */
+    .features {
+      position: relative;
+      width: 100%;
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      overflow: hidden;
+    }
+    .feature {
+      position: absolute;
+      right: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      backdrop-filter: blur(var(--blur));
+      font-family: monospace;
+      font-size: 0.95rem;
+      color: var(--fg);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 1s ease, transform 1s ease;
+    }
+    .feature.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .feature.exiting {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    .feature .icon {
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Animated Starfield Background -->
+  <canvas id="bg"></canvas>
+
+  <!-- Header with Logo + Centered Nav -->
+  <header>
+    <img src="logo.png" alt="N3XUS Logo" class="logo">
+    <nav>
+      <a href="/commands" class="active">Commands</a>
+      <a href="/faq">FAQ</a>
+    </nav>
+  </header>
+
+  <!-- Hero / Showcase -->
+  <div class="hero">
+    <!-- Left Text -->
+    <div class="hero-content">
+      <h1><span>N3XUS</span> is Discord’s #1 NSFW bot</h1>
+      <p>
+        Meet N3XUS, the ultimate adult content assistant for your server.  
+        Search millions of images, GIFs, and videos—all at your fingertips,  
+        fully moderated and easy to use.
+      </p>
+      <!-- PURCHASE BUTTON only -->
+      <a href="https://discord.gg/y6EdJBAvF9" target="_blank" class="btn">
+        Purchase →
+      </a>
+    </div>
+    <!-- Right Animated Feature Callouts -->
+    <div class="features">
+      <div class="feature"><span class="icon">🔍</span><span>Image Search</span></div>
+      <div class="feature"><span class="icon">📂</span><span>Premium Galleries</span></div>
+      <div class="feature"><span class="icon">🎲</span><span>Random NSFW</span></div>
+    </div>
+  </div>
+
+  <!-- STARFIELD SCRIPT -->
+  <script>
+    // — Starfield Background
+    const canvas = document.getElementById('bg');
+    const ctx = canvas.getContext('2d');
+    let w = canvas.width = innerWidth;
+    let h = canvas.height = innerHeight;
+    const stars = [], STAR_COUNT = 120;
+    function initStars() {
+      stars.length = 0;
+      for (let i = 0; i < STAR_COUNT; i++) {
+        stars.push({ x: Math.random()*w, y: Math.random()*h, z: Math.random()*w, o: Math.random() });
+      }
+    }
+    function drawStars() {
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, w, h);
+      for (let s of stars) {
+        s.z -= 2;
+        if (s.z <= 0) { s.x = Math.random()*w; s.y = Math.random()*h; s.z = w; s.o = Math.random(); }
+        const k = 128/s.z;
+        const px = (s.x - w/2)*k + w/2;
+        const py = (s.y - h/2)*k + h/2;
+        const size = (1 - s.z/w)*3;
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(255,255,255,${s.o})`;
+        ctx.arc(px, py, size, 0, Math.PI*2);
+        ctx.fill();
+      }
+      requestAnimationFrame(drawStars);
+    }
+    window.addEventListener('resize', ()=>{
+      w = canvas.width = innerWidth;
+      h = canvas.height = innerHeight;
+      initStars();
+    });
+    initStars();
+    drawStars();
+
+    // — Feature Messages Cycle
+    const features = document.querySelectorAll('.feature');
+    let idx = 0;
+    function showNextFeature() {
+      const current = features[idx];
+      current.classList.add('visible');
+      setTimeout(() => current.classList.add('exiting'), 2000);
+      setTimeout(() => {
+        current.classList.remove('visible', 'exiting');
+        idx = (idx + 1) % features.length;
+        showNextFeature();
+      }, 3000);
+    }
+    window.addEventListener('load', () => {
+      features.forEach(f => f.classList.remove('visible','exiting'));
+      showNextFeature();
+    });
+  </script>
+
+</body>
+</html>
