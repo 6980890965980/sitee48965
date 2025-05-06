@@ -14,7 +14,8 @@
       --radius: 8px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-    body { background: var(--bg); color: var(--fg); min-height: 100vh; }
+    /* Prevent scrolling until loader is gone */
+    body { background: var(--bg); color: var(--fg); min-height: 100vh; overflow: hidden; }
     a { color: inherit; text-decoration: none; }
     .header {
       display: flex;
@@ -48,6 +49,33 @@
       color: #fff;
     }
     main { padding: 0 32px 32px; }
+
+    /* Loader Overlay */
+    #loader {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    .loader-logo {
+      width: 120px;
+      animation: glow 1s ease-in-out infinite alternate;
+    }
+    @keyframes glow {
+      from { filter: drop-shadow(0 0 5px var(--accent)); }
+      to   { filter: drop-shadow(0 0 20px var(--accent)); }
+    }
+    @keyframes zoomFade {
+      0%   { transform: scale(1); opacity: 1; }
+      100% { transform: scale(2); opacity: 0; }
+    }
+    .loader-logo.zoom-out {
+      animation: zoomFade 0.8s ease-in-out forwards;
+    }
 
     /* Commands */
     .search-bar {
@@ -159,6 +187,11 @@
 </head>
 <body>
 
+  <!-- Loader -->
+  <div id="loader">
+    <img class="loader-logo" src="/static/ne.png" alt="Logo">
+  </div>
+
   <header class="header">
     <img class="logo" src="/static/ne.png" alt="Logo">
     <nav>
@@ -265,13 +298,13 @@
         </div>
         <div class="card">
           <h3>/suggest_modal</h3>
-          <p class="description">Post the site‑suggestion prompt + button.</p>
+          <p class="description">Post the site-suggestion prompt + button.</p>
           <div class="meta"><div><strong>Arguments:</strong> none</div></div>
           <button class="copy-btn">Copy</button>
         </div>
         <div class="card">
           <h3>/whisper</h3>
-          <p class="description">Start a private whisper chat with a 5‑minute countdown and optional extension.</p>
+          <p class="description">Start a private whisper chat with a 5-minute countdown and optional extension.</p>
           <div class="meta"><div><strong>Arguments:</strong> none</div></div>
           <button class="copy-btn">Copy</button>
         </div>
@@ -400,7 +433,21 @@
   </main>
 
   <script>
-    // Nav‑tab switching
+    // Loader logic
+    window.addEventListener('load', () => {
+      const loader = document.getElementById('loader');
+      const logo = loader.querySelector('.loader-logo');
+      // After glowing for 2s, zoom out & fade
+      setTimeout(() => {
+        logo.classList.add('zoom-out');
+        logo.addEventListener('animationend', () => {
+          loader.remove();
+          document.body.style.overflow = '';
+        });
+      }, 2000);
+    });
+
+    // Nav-tab switching
     const navLinks = document.querySelectorAll('nav a');
     const sections = document.querySelectorAll('main section');
     navLinks.forEach(link => {
@@ -417,7 +464,7 @@
       });
     });
 
-    // Category‑tab switching inside Commands
+    // Category-tab switching inside Commands
     const catButtons = document.querySelectorAll('.categories button');
     const cards = document.querySelectorAll('.grid .card');
     const categories = { 'Admin': 0, 'NSFW': 7, 'Misc': 20 };
@@ -436,7 +483,7 @@
     // init: show only Admin on load
     cards.forEach((c, i) => { if (i >= 7) c.style.display = 'none'; });
 
-    // Copy‑to‑clipboard
+    // Copy-to-clipboard
     document.querySelectorAll('.copy-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const cmd = btn.closest('.card').querySelector('h3').innerText.trim();
