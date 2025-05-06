@@ -60,7 +60,7 @@
       width: calc(100% - 64px);
       display: flex;
       align-items: center;
-      z-index: 2; /* bumped up from 1 so nav links sit above the hero/faq */
+      z-index: 2;
     }
     .logo {
       height: 128px;
@@ -290,7 +290,7 @@
     }
     window.addEventListener('load', cycle);
 
-    // — Tab switching
+    // — Tab switching & API navigation
     const cmdLink = document.getElementById('cmdLink');
     const faqLink = document.getElementById('faqLink');
     const cmdSec  = document.getElementById('commandsSection');
@@ -298,10 +298,8 @@
 
     cmdLink.addEventListener('click', e => {
       e.preventDefault();
-      cmdLink.classList.add('active');
-      faqLink.classList.remove('active');
-      cmdSec.classList.add('active');
-      faqSec.classList.remove('active');
+      // navigate to your API endpoint instead of just toggling tabs
+      window.location.href = '/api/commands';
     });
     faqLink.addEventListener('click', e => {
       e.preventDefault();
