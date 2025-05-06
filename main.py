@@ -4,7 +4,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 import asyncio 
 
-SERVICE_URL = "https://n3xus.onrender.com/"
+SERVICE_URL = "https://n3xus-x4ep.onrender.com"
 
 app = FastAPI()
 
